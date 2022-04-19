@@ -1,0 +1,477 @@
+
+{% extends 'base.html' %}
+{% include 'header.html' %}
+
+
+
+
+{% block body %}
+
+<div class="container">
+   <div class="row">
+      <div class="col md-12">
+
+         <div class="jumbotron p-3">
+
+            <h2>Gerenciar <b>pedidos </b> <button type="button" class="btn btn-success float-right" data-toggle="modal"
+                  data-target="#mymodal">Adicionar Novos Pedidos</button> 
+
+                  
+            <button style="margin: 0 7px;" type="button" class="btn btn-success float-right" data-toggle="modal"
+                  data-target="#mycardapio">Cardápio</button></h2>
+                
+
+            
+
+            {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+            {% for message in messages %}
+
+            <div class="alert alert-success alert-dismissable" role="alert">
+
+               <button type="button" class="close" data-dismiss="alert" aria-label="close">
+
+                  <span aria-hidden="true">x</span>
+
+               </button>
+
+
+               {{message}}
+
+
+            </div>
+
+
+            {% endfor %}
+
+            {% endif %}
+            {% endwith %}
+
+
+         <table class="table table-hover table-dark">
+
+               <tr>
+
+                  <th>ID</th>
+                  <th>Nome</th>
+                  <th>Pedidos</th>
+                  <th>Itens</th>
+                  <th>Valor</th>
+                  <th>Pag.Dinheiro</th>
+                  <th>Pag.Cartão</th>
+                  <th>Ações</th>
+
+               </tr>
+
+
+               {% for row in pedidos %}
+               <tr>
+                  <td>{{row.id}}</td>
+                  <td>{{row.nome}}</td>
+                  <td>{{row.pedidos}}</td>
+                  <td>{{row.itens_id}}</td>
+                  <td>{{row.valor}}</td>
+
+                {% if row.pag_dinheiro|int != 0 %} 
+                <td><input type="checkbox" id="1"  checked disabled>{{row.pag_dinheiro}}</td>
+                {% endif %}
+                {% if row.pag_dinheiro|int != 1 %}  
+                  <td><input type="checkbox" id="1" disabled>{{row.pag_dinheiro}}</td>
+                {% endif %}
+                {% if row.pag_cartao|int != 0 %}
+                  <td><input type="checkbox" id="2" checked disabled>{{row.pag_cartao}}</td>
+                {% endif %}
+                {% if row.pag_cartao|int != 1 %}
+                <td><input type="checkbox" id="2" disabled>{{row.pag_cartao}}</td>
+                {% endif %}  
+
+                  <td>
+                     <a href="/update/{{row.id}}" class="btn btn-warning btn-xs" data-toggle="modal"
+                        data-target="#modaledit{{row.id}}">Editar</a>
+                     <a href="/delete/{{row.id}}" class="btn btn-danger btn-xs">Deletar</a>
+
+
+                  </td>
+
+               </tr>
+
+
+               <!-- Modal Edit pedido-->
+               <div id="modaledit{{row.id}}" class="modal fade" role="dialog">
+                  <div class="modal-dialog">
+
+
+                     <div class="modal-content">
+
+
+                        <div class="modal-header">
+
+
+                           <h4 class="modal-title">Atualizar informações</h4>
+
+
+                        </div>
+
+
+                        <div class="modal-body">
+
+
+                           <form action="{{url_for('update')}}" method="POST">
+
+
+                              <div class="form-group">
+
+
+                                 <label>Nome:</label>
+                                 <input type="hidden" name="id" value="{{row.id}}">
+
+                                 <input type="text" class="form-control" name="nome" value="{{row.nome}}">
+
+
+                              </div>
+
+
+
+                              <div class="form-group">
+
+
+                                 <label>Pedido:</label>
+
+                                 <input type="text" class="form-control" name="pedidos" value="{{row.pedidos}}">
+
+
+                              </div>
+
+
+                              <div class="form-group">
+
+
+                                 <label>Nome do Produto: </label>
+
+                                 <input type="text" class="form-control" name="itens_id" value="{{row.itens_id}}">
+
+
+                              </div>
+
+                              <div class="form-group">
+
+
+                                 <label>Valor:</label>
+
+                                 <input type="text" class="form-control" name="valor" value="{{row.valor}}">
+
+
+                              </div>
+                              <div class="form-group">
+
+
+                                 <label>Registre um tipo de Pagamento:</label>
+                                 <select class="form-select" aria-label="Default select example" name="tipo_pag">
+                                    <option value="naopago">Não Pago</option> 
+                                    <option value="dinheiro">Dinheiro</option>
+                                    <option value="cartao">Cartão</option>
+                                 </select>
+      
+                              </div>
+
+                              <div class="form-group">
+
+
+                                 <button class="btn btn-primary" type="submit">Atualizar</button>
+
+
+                              </div>
+
+
+                           </form>
+
+
+                        </div>
+
+
+                        <div class="modal-footer">
+
+
+                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+
+
+                        </div>
+
+
+                     </div>
+
+
+                  </div>
+
+               </div>
+
+
+               {% endfor %}
+
+            </table>
+
+
+         </div>
+
+
+
+         <!-- Modal Add pedido-->
+
+
+         <div id="mymodal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                  <div class="modal-header">
+
+                     <h4 class="modal-title">Adicionar pedido</h4>
+                  </div>
+                  <div class="modal-body">
+
+                     <form action="{{url_for('insert')}}" method="POST">
+
+
+                        <div class="form-group">
+
+                           <label>Nome:</label>
+                           <input type="text" class="form-control" name="nome" required="1">
+
+                           
+
+                        </div>
+
+
+                        <div class="form-group">
+
+
+                           <label>Pedido:</label>
+                           <input type="number" class="form-control" name="pedidos" required="1">
+
+
+                        </div>
+
+
+                        <div class="form-group">
+
+
+                           <label>Nome do Produto:</label>
+                           <input type="text" class="form-control" name="itens_id" required="1">
+
+
+                        </div>
+
+                        <div class="form-group">
+
+
+                           <label>Valor:</label>
+                           <input type="number" step="0.01" class="form-control" name="valor" required="1">
+
+
+                        </div>
+
+                        <div class="form-group">
+
+                           <label>Registre um tipo de Pagamento:</label>
+                           <select name="tipo_pag" onchange="verifSelect(this.value)">
+                              <option value="naopago">Não Pago</option> 
+                              <option value="dinheiro">Dinheiro</option>
+                              <option value="cartao">Cartão</option>
+                           </select>
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+
+                           <button class="btn btn-primary" type="submit">Adicionar pedido</button>
+
+
+                        </div>
+
+
+                     </form>
+                     <div class="container py-3">
+                        <div id="part0" class="row" style="display:none;">
+                           <h3 id="msg" class="text-center"></h3>
+                           <div  class="progress" >
+                           <div  id="part1" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 25%;display: none" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>            
+                           <div id="part2" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%; display: none" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>            
+                           <div id="part3" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 75%; display: none" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>            
+                           <div id="part4" class="progress-bar  bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%; display: none" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+
+                  <div class="modal-footer">
+                     
+
+                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+
+
+                  </div>
+
+
+               </div>
+
+
+            </div>
+
+
+         </div>
+
+         <!-- Modal Cardapio-->
+
+
+         <div id="mycardapio" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                  <div class="modal-header" style="background-color: rgb(203, 203, 203);">
+
+                     <table class="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Cod.Produto</th>
+                            <th scope="col">Produto</th>
+                            <th scope="col">Valor</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">2369</th>
+                            <td>Coxinha</td>
+                            <td>R$ 06.00</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">2055</th>
+                            <td>Esfiha</td>
+                            <td>R$ 06.00</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">2632</th>
+                            <td>Pastel</td>
+                            <td>R$ 08.00</td>
+                          </tr>
+                          <tr>
+                           <th scope="row">2424</th>
+                           <td>Kibe</td>
+                           <td>R$ 06.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">2234</th>
+                           <td>Enroladinho</td>
+                           <td>R$ 06.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">2523</th>
+                           <td>Empadinha</td>
+                           <td>R$ 06.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">2413</th>
+                           <td>Beirute</td>
+                           <td>R$ 11.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">9631</th>
+                           <td>Skol</td>
+                           <td>R$ 12.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">9666</th>
+                           <td>Antarctica</td>
+                           <td>R$ 09.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">9304</th>
+                           <td>Heineken</td>
+                           <td>R$ 16.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">9022</th>
+                           <td>Brahma</td>
+                           <td>R$ 10.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">8563</th>
+                           <td>Coca-Cola</td>
+                           <td>R$ 05.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">8643</th>
+                           <td>Itubaína</td>
+                           <td>R$ 04.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">8145</th>
+                           <td>Guaraná</td>
+                           <td>R$ 04.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">8578</th>
+                           <td>Água</td>
+                           <td>R$ 03.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">8597</th>
+                           <td>Suco(Lata)</td>
+                           <td>R$ 07.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">6123</th>
+                           <td>Seleta</td>
+                           <td>R$ 02.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">6666</th>
+                           <td>Kariri</td>
+                           <td>R$ 02.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">6593</th>
+                           <td>Boazinha</td>
+                           <td>R$ 02.00</td>
+                         </tr>
+                         <tr>
+                           <th scope="row">6763</th>
+                           <td>51</td>
+                           <td>R$ 02.00</td>
+                         </tr>
+
+                        </tbody>
+                      </table>
+
+                  <div class="modal-footer">
+                     
+
+                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+
+
+                  </div>
+
+
+               </div>
+
+
+            </div>
+
+
+         </div>
+
+
+
+
+
+      </div>
+
+   </div>
+
+
+</div>
+
+
+{% endblock %}
